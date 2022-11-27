@@ -3,15 +3,12 @@
    Date:21/11/22
    Possible client commands defined in chat_protocol.py
 """
-from datetime import datetime
-import socket
-from random import random
 
+import socket
 import select
 import chat_protocol
 
 MAX_MSG_LENGTH = 1024
-
 SERVER_IP = '0.0.0.0'
 
 
@@ -23,53 +20,57 @@ SERVER_IP = '0.0.0.0'
 
 
 def create_server_rsp(cmd, client_names, socket_to_handle):
-    cmd_list = cmd.split()
+    """The function create the proper response to a certain client according to the message that the client has sent"""
 
-    # todo case sen is not good here
-    """create a message for the client according to the command he sent"""
-    Data_not_sen_case = cmd  # in order to get also small letters and not just capital
-    if Data_not_sen_case[0:4] == "NAME":
+    cmd_list = cmd.split()  # the split of the message into a list help to manage and sent the right response
+
+    if cmd_list[0] == "NAME":
+        if len(cmd_list) > 2:  # if the name has more than one word,it's not legal
+            return "Server Sent: The name should have just one word! try again", None
         if socket_to_handle in client_names.keys():
-            client_names[socket_to_handle] = cmd[4:]
-            return "hello" + cmd[5:], None
+            if cmd_list[1] not in client_names.values():
+                client_names[socket_to_handle] = cmd_list[1]  # adding the name to the dict right to its socket key
+                return "Server Sent: Hello " + cmd_list[1], None
+            else:
+                return "Server Sent: Name already exists,try different name", None
 
-    elif Data_not_sen_case == "GET_NAMES":
-        return "Server sent" + client_names.values(), None
+    elif cmd == "GET_NAMES":
+        name_list = ""
+        for name in client_names.values():
+            if name is not None:
+                name_list += str(name)  # chaining the names of the clients
+                name_list += " "
+        return "Server sent: " + name_list, None
 
-    elif Data_not_sen_case[0:3] == "MSG":
-        if cmd_list[1] in client_names.values:
+    elif cmd_list[0] == "MSG":
+        if cmd_list[1] in client_names.values():
             len_of_first_two_words = len(cmd_list[0]) + len(cmd_list[1]) + 1
             client_dest_name = str(cmd_list[1])
-            msg_to_send = Data_not_sen_case[len_of_first_two_words:]
-            return "Server sent" + str(client_names[socket_to_handle]) + "sent" + msg_to_send, client_dest_name
+            msg_to_send = cmd[len_of_first_two_words:]
+            return "Server sent: " + str(client_names[socket_to_handle]) + " sent" + msg_to_send, client_dest_name
         else:
-            return "client name doesnt exist"
-    elif Data_not_sen_case == "EXIT":
-        return "goodbye", None
+            return "Client name doesn't exist", None
+    elif cmd == "EXIT":
+        client_names.pop(socket_to_handle)  # pop the client out of the dict
+        return "EXIT", None
     else:
-        return "not valid input,try again", None
+        return "Not valid input,try again", None
 
 
-# def check_cmd(data):
-#     """Check if the command is defined in the protocol (e.g. NUMBER, HELLO, TIME, EXIT)"""
-#     Data_not_sen_case = data.upper()  # in order to get also small letters and not just capital
-#     if Data_not_sen_case == "NUMBER" or Data_not_sen_case == "HELLO" \
-#             or Data_not_sen_case == "TIME" or Data_not_sen_case == "EXIT":
-#         return True
-#     else:
-#         return False
+def close_client_connection(current_socket, clients_names):
+    """The function close the connection with client in case that the client suddenly closed"""
+    clients_names.pop(current_socket)
+    current_socket.close()
 
 
 def return_key(val, socket_names):
-    """the func return the desired key given certain value"""
+    """The func return the desired key given certain value"""
     for key, value in socket_names.items():
         if value == val:
             return key
 
 
-def print_client_sockets(client_sockets):
-    for c in client_sockets:
-        print("\t", c.getpeername())
+
 
 
 def main():
@@ -82,6 +83,7 @@ def main():
     messages_to_send = []
     clients_names = {}
     client_des_name = None
+    client_address = ""
 
     while True:
         rlist, wlist, xlist = select.select([server_socket] + client_sockets, client_sockets, [], 0.1)
@@ -91,29 +93,44 @@ def main():
                 print("New client joined!", client_address)
                 clients_names[connection] = None
                 client_sockets.append(connection)
-                #print_client_sockets(client_sockets)
+                # print_client_sockets(client_sockets)
             else:
-                valid_msg, cmd = chat_protocol.get_msg(current_socket)
-                if valid_msg:
-                    if cmd == "":
-                        print("Connection closed", )
-                        client_sockets.remove(current_socket)
-                        current_socket.close()
-                        print_client_sockets(client_sockets)
-                    else:
-                        response, client_des_name = create_server_rsp(cmd, clients_names, current_socket)
-                        if client_des_name is not None:
-                            key_socket = return_key(client_des_name, clients_names)
-                            messages_to_send.append((key_socket, response))
+                try:
+                    valid_msg, cmd = chat_protocol.get_msg(current_socket)
+                    if valid_msg:
+                        if cmd == "":
+                            print("Connection closed", )
+                            client_sockets.remove(current_socket)
+                            current_socket.close()
                         else:
-                            messages_to_send.append((current_socket, response))
+                            response, client_des_name = create_server_rsp(cmd, clients_names, current_socket)
+                            if client_des_name is not None:  # if the client want to send a message to someone else
+                                key_socket = return_key(client_des_name, clients_names)
+                                messages_to_send.append((key_socket, response))
+                            else:
+                                messages_to_send.append((current_socket, response))
+                except Exception as e:  # the purpose of the exception is to avoid the crash of server if we force
+                    # closing of one of the clients
+                    print("Error: {}".format(e))
+                    print("The connection with current client has lost", client_address)
+                    close_client_connection(current_socket, clients_names)
+                    client_sockets.remove(current_socket)
+                    continue
 
         for message in messages_to_send:
             current_socket, data = message
             if current_socket in wlist:
-                set_msg = chat_protocol.create_msg(data)
-                current_socket.send(data.encode())
-                messages_to_send.remove(message)
+                try:
+                    set_msg = chat_protocol.create_msg(data)
+                    current_socket.send(set_msg.encode())
+                    messages_to_send.remove(message)
+                except Exception as e:  # the purpose of the exception is to avoid the crash of server if we force
+                    # closing of one of the clients
+                    print("Error: {}".format(e))
+                    print("The connection with current client has lost", client_address)
+                    close_client_connection(current_socket, clients_names)
+                    client_sockets.remove(current_socket)
+                    continue
 
 
 if __name__ == "__main__":
