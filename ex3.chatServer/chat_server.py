@@ -27,6 +27,9 @@ def create_server_rsp(cmd, client_names, socket_to_handle):
     if cmd_list[0] == "NAME":
         if len(cmd_list) > 2:  # if the name has more than one word,it's not legal
             return "Server Sent: The name should have just one word! try again", None
+        if not cmd_list[1].isalpha():
+            return "The name "
+
         if socket_to_handle in client_names.keys():
             if cmd_list[1] not in client_names.values():
                 client_names[socket_to_handle] = cmd_list[1]  # adding the name to the dict right to its socket key
@@ -70,9 +73,6 @@ def return_key(val, socket_names):
             return key
 
 
-
-
-
 def main():
     print("Setting up server...")
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -81,19 +81,19 @@ def main():
     print("Listening for clients...")
     client_sockets = []
     messages_to_send = []
-    clients_names = {}
+    clients_names = {}  # dictionary that holds the client sockets and their names
     client_des_name = None
     client_address = ""
 
     while True:
         rlist, wlist, xlist = select.select([server_socket] + client_sockets, client_sockets, [], 0.1)
-        for current_socket in rlist:
+        for current_socket in rlist:  # iterate on the readable list to see if there is a
+            # client that the server needs to read from him message
             if current_socket is server_socket:
                 connection, client_address = current_socket.accept()
                 print("New client joined!", client_address)
                 clients_names[connection] = None
                 client_sockets.append(connection)
-                # print_client_sockets(client_sockets)
             else:
                 try:
                     valid_msg, cmd = chat_protocol.get_msg(current_socket)

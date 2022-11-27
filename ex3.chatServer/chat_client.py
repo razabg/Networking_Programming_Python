@@ -32,8 +32,8 @@ def main():
     print("pls enter commands:\n")
     while True:
         rlist, wlist, xlist = select.select([my_socket], [my_socket], [], 0.1)
-        if len(rlist) != 0:  # there is no need to iterate over the list because
-            # we know that we have only one element in the list
+        if len(rlist) != 0:  # unlike the server, there is no need to iterate over the list because
+            # we know that we have only one element in the list = my_socket
             valid_msg, cmd = chat_protocol.get_msg(rlist[0])
             if valid_msg:
                 if cmd == "EXIT":
