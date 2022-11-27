@@ -40,7 +40,6 @@ def main():
                     break
                 print()
                 print(cmd + "\n")
-                user_input = "" # clean the variable
 
             else:  # we will get here only of there is a disruption with length field of the protocol
                 print("wrong protocol\n")
@@ -55,8 +54,10 @@ def main():
                         user_input = user_input[:-1]
                         continue
                     if ch == ENTER:
-                        # in case the input is too long
-                        if len(user_input) > MAX_LENGTH_OF_MESSAGE:
+                        if user_input == '':  # cover the case that the user press enter and send empty message
+                            user_input = "not valid"
+
+                        if len(user_input) > MAX_LENGTH_OF_MESSAGE:  # in case the input is too long
                             print()
                             print("The message is too long,try again\n")
                             user_input = ""
