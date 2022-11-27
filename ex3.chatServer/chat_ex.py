@@ -1,8 +1,9 @@
 import msvcrt
 
-def close_client_connection(current_socket,clients_names):
-    clients_names.pop(socket)
-    current_socket.close()
+
+# def close_client_connection(current_socket,clients_names):
+#     clients_names.pop(socket)
+#     current_socket.close()
 # try:
 # except Exception as e:
 #     print("Error: {}".format(e))

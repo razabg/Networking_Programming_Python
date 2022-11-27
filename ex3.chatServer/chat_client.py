@@ -26,7 +26,6 @@ ENTER = '\r'
 def main():
     my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     my_socket.connect((HOME_IP, chat_protocol.PORT))
-    messages_to_send = []
 
     user_input = ""
     print("pls enter commands:\n")
@@ -51,7 +50,7 @@ def main():
                 if ch.isascii():  # the program will work only with ascii characters
                     ch = ch.decode()
                     print(ch, end="", flush=True)
-                    if ch == BACKSPACE:
+                    if ch == BACKSPACE:  # delete the last character
                         user_input = user_input[:-1]
                         continue
                     if ch == ENTER:
@@ -64,7 +63,7 @@ def main():
                             user_input = ""
                             continue
                         wlist[0].send(chat_protocol.create_msg(user_input).encode())
-                        user_input = ""  # clean the variable
+                        user_input = ""  # erase the user input
                         print()
                     else:
                         user_input += ch
