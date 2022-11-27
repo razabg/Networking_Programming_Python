@@ -20,7 +20,9 @@ SERVER_IP = '0.0.0.0'
 
 
 def create_server_rsp(cmd, client_names, socket_to_handle):
-    """The function create the proper response to a certain client according to the message that the client has sent"""
+    """The function create the proper response to a certain client according to the message that the client has sent.
+    The func get the following parameters: input = cmd , the dict of the clients = client_names,
+    the socket we handle  = socket_to_handle """
 
     cmd_list = cmd.split()  # the split of the message into a list help to manage and sent the right response
 
@@ -28,7 +30,7 @@ def create_server_rsp(cmd, client_names, socket_to_handle):
         if len(cmd_list) > 2:  # if the name has more than one word,it's not legal
             return "Server Sent: The name should have just one word! try again", None
         if not cmd_list[1].isalpha():
-            return "The name "
+            return "The name must consist of only letters ", None
 
         if socket_to_handle in client_names.keys():
             if cmd_list[1] not in client_names.values():
@@ -47,16 +49,18 @@ def create_server_rsp(cmd, client_names, socket_to_handle):
 
     elif cmd_list[0] == "MSG":
         if cmd_list[1] in client_names.values():
-            len_of_first_two_words = len(cmd_list[0]) + len(cmd_list[1]) + 1
+            len_of_first_two_words = len(cmd_list[0]) + len(cmd_list[1]) + 1  # the length of the first two words
+            # MSG + name of the client
             client_dest_name = str(cmd_list[1])
-            msg_to_send = cmd[len_of_first_two_words:]
+            msg_to_send = cmd[len_of_first_two_words:]  # the content of the message will come after the input of the
+            # command and the client's name
             return "Server sent: " + str(client_names[socket_to_handle]) + " sent" + msg_to_send, client_dest_name
         else:
             return "Client name doesn't exist", None
     elif cmd == "EXIT":
         client_names.pop(socket_to_handle)  # pop the client out of the dict
         return "EXIT", None
-    else:
+    else:  # in case of every other input
         return "Not valid input,try again", None
 
 
@@ -82,7 +86,7 @@ def main():
     client_sockets = []
     messages_to_send = []
     clients_names = {}  # dictionary that holds the client sockets and their names
-    client_des_name = None
+    client_des_name = None  # we will store here the name of the dest socket
     client_address = ""
 
     while True:
@@ -94,7 +98,7 @@ def main():
                 print("New client joined!", client_address)
                 clients_names[connection] = None
                 client_sockets.append(connection)
-            else:
+            else:  # if its client socket and we want the read the message that he sent
                 try:
                     valid_msg, cmd = chat_protocol.get_msg(current_socket)
                     if valid_msg:
