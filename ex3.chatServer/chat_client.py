@@ -54,8 +54,10 @@ def main():
                         user_input = user_input[:-1]
                         continue
                     if ch == ENTER:
-                        if user_input == '':  # cover the case that the user press enter and send empty message
-                            user_input = "not valid"
+                        if user_input == '':  # cover the case that the user press enter and the user input is still
+                            # empty
+                            print("pls enter commands:\n")
+                            continue
 
                         if len(user_input) > MAX_LENGTH_OF_MESSAGE:  # in case the input is too long
                             print()
