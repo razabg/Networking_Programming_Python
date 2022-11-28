@@ -1,5 +1,5 @@
 # raz abergel 313575185
-# Deja Vu exercise
+# Deja Vu exercise .
 
 # the constant for the program
 CORRECT_LEN = 5
