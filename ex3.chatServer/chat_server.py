@@ -47,6 +47,8 @@ def create_server_rsp(cmd, client_names, socket_to_handle):
         return "Server sent: " + name_list, None
 
     elif cmd_list[0] == "MSG" and len(cmd_list) != 1:
+        if client_names[socket_to_handle] is None:  # The client must have name if he wants to send messages
+            return "You must have name before you send message", None
         if cmd_list[1] in client_names.values():
             len_of_first_two_words = len(cmd_list[0]) + len(cmd_list[1]) + 1  # the length of the first two words
             # MSG + name of the client
