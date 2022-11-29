@@ -52,6 +52,7 @@ def main():
     print("Server is up and running")
     # Create client socket for incoming connection
     (client_socket, client_address) = server_socket.accept()
+
     print("Client connected")
 
     while True:
