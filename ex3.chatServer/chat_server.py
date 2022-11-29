@@ -26,7 +26,7 @@ def create_server_rsp(cmd, client_names, socket_to_handle):
 
     cmd_list = cmd.split()  # the split of the message into a list help to manage and sent the right response
 
-    if cmd_list[0] == "NAME":
+    if cmd_list[0] == "NAME" and len(cmd_list) != 1:
         if len(cmd_list) > 2:  # if the name has more than one word,it's illegal
             return "Server Sent: The name should have just one word! try again", None
         if not cmd_list[1].isalpha():
@@ -46,7 +46,7 @@ def create_server_rsp(cmd, client_names, socket_to_handle):
                 name_list += str(name) + " "  # chaining the names of the clients
         return "Server sent: " + name_list, None
 
-    elif cmd_list[0] == "MSG":
+    elif cmd_list[0] == "MSG" and len(cmd_list) != 1:
         if cmd_list[1] in client_names.values():
             len_of_first_two_words = len(cmd_list[0]) + len(cmd_list[1]) + 1  # the length of the first two words
             # MSG + name of the client
