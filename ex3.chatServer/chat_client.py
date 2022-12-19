@@ -43,7 +43,7 @@ def main():
             else:  # we will get here only of there is a disruption with length field of the protocol
                 print("wrong protocol\n")
 
-        if len(wlist) != 0:  # unlike the server, there is no need to iterate over the list because
+        if len(wlist) != 0:  # unlike the server, there is no need to iterate over a list because
             # we know that we have only one element in the list = my_socket
             if msvcrt.kbhit():
                 ch = msvcrt.getch()
