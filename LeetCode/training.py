@@ -1,32 +1,22 @@
-from collections import Counter
-
-
-class Solution:
-    def isPalindrome(self, s: str) -> bool:
-        a = s.replace(" ", "")
-        a = a.lower()
-        for i in a:
-            if not i.isalnum():
-                a = a.replace(i, "")
-
-        if a[::-1] == a:
-            return True
-        else:
-            return False
+from pytube import YouTube
+import pytube
+import os
+import youtube_dl
 
 
 def main():
-    sol = Solution()
+    video_url = input("enter url of youtube video:")
+    video_info = youtube_dl.YoutubeDL().extract_info(url=video_url, download=False)
+    filename = f"{video_info['title']}.mp3"
+    options = {
+        'format': 'bestaudio/best',
+        'keepvideo': False,
+        'outtmpl': filename,
+    }
+    with youtube_dl.YoutubeDL(options) as ydl:
+        ydl.download([video_info['webpage_url']])
+    print("Download complete... {}".format(filename))
 
-    answer = sol.isPalindrome("0P")
-    print(answer)
-    answer = sol.isPalindrome(" ")
-    print(answer)
-    answer = sol.isPalindrome("A man, a plan, a canal: Panama")
-    print(answer)
 
-
-
-"""main"""
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
