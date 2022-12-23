@@ -8,8 +8,8 @@ import os
 
 import boto3
 
-AWS_ACCESS_KEY_ID = #r'AKIARSSBJT7HMYR7NX7T'
-AWS_SECRET_ACCESS_KEY = #r'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'
+AWS_ACCESS_KEY_ID = 'T7HMYR7NX7T'
+AWS_SECRET_ACCESS_KEY = 'gavJNEoOtvpzGDK9Svp+h'
 REGION = 'eu-central-1'
 
 transcribe = boto3.client('transcribe',
