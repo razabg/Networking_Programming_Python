@@ -1,7 +1,6 @@
 import time
 import pandas as pd
 import numpy as np
-import pytube
 import youtube_dl
 from pytube import *
 import os
