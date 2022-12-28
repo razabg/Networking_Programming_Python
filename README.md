@@ -1,5 +1,5 @@
 # Networking_Programming_Python
-network programing dddd
+network programing 
 
 Implementing using tcp and udp sockets :<br>
 #Chat server-client for multiple clients using select os method.<br>
