@@ -1,10 +1,10 @@
 # Networking_Programming_Python
 network programing 
 
-Implementing using tcp and udp sockets :/n
-#Chat server-client.
-#Http server.
-#Dns server using scapy.
-#Syn flood attack analysis.
-#TLS research
-#Basics for search in video application using aws services.
+Implementing using tcp and udp sockets :<br>
+#Chat server-client.<br>
+#Http server.<br>
+#Dns server using scapy.<br>
+#Syn flood attack analysis.<br>
+#TLS research<br>
+#Basics for search in video application using aws services.<br>
