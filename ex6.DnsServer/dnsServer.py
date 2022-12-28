@@ -1,54 +1,88 @@
-# ex6.DnsServer over http-server
-# implementing nslookup command
+# ex6.DnsServer over http-server (using scapy)
+# implementing nslookup commands : A query and PTR query
 # Author: Raz abergel 313575185
+
+
 from scapy.layers.dns import DNSQR, DNS, DNSRR
 from scapy.layers.inet import UDP, IP
 from scapy.sendrecv import sr1
 from scapy.all import *
-import os
 import socket
+import re
 
 MSG_LENGTH = 1024
 IP_SOCKET = '0.0.0.0'
 PORT = 8153
 SOCKET_TIMEOUT = 0.1
 OK200_RESPONSE = "HTTP/1.1 200 OK\r\n"
+REV_POST = ".in-addr.arpa"
+IP_PATTERN = r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
 
 
 def dns_request_type_a(url):
-    dns_query = IP(dst="8.8.8.8") / UDP(sport=24601, dport=53) / DNS(qdcount=1) / DNSQR(qname=url)
-    result = sr1(dns_query)
-    counter = result[DNS].ancount # counter of the query answers
+    """Regular mapping (A), url name -> ip"""
+    dns_query = IP(dst="8.8.8.8") / UDP(sport=24601, dport=53) / DNS(qdcount=1, rd=1) / DNSQR(qname=url)
+    result = sr1(dns_query, timeout=2, retry=3)
+    counter = result[DNS].ancount  # counter of the query answers
     ip_list = ""
-    for i in range(1, counter): # loop over the ans and take the rdata section
-        ip_list += result[DNSRR][i].rdata + '<br>'
+    if counter == 1:
+        ip_list += result[DNSRR][0].rdata + '<br>'
+        return ip_list
+
+    for i in range(1, counter):  # loop over the ans and take the rdata section
+        if is_valid_ipv4(str(result[DNSRR][i].rdata)):  # check if the rdata contains ipv4
+            ip_list += result[DNSRR][i].rdata + '<br>'
 
     return ip_list
 
 
 def dns_request_type_ptr(ip):
-    pass
+    """Reverse mapping (PTR), ip ->url name"""
+    canonical_name = ""
+    dns_query = IP(dst='8.8.8.8') / UDP(sport=24601, dport=53) / DNS(qdcount=1, rd=1) / DNSQR(
+        qname=rev_ip(ip) + REV_POST, qtype='PTR')
+
+    result = sr1(dns_query, timeout=2, retry=3)
+    if not result.haslayer(DNSRR):  # in case there is no canonical nam
+        canonical_name = "This IP has no canonical name"
+        return canonical_name
+    decoded_name = result[DNSRR][0].rdata.decode()
+    canonical_name += decoded_name + '<br>'
+    return canonical_name
+
+
+def rev_ip(ip):
+    """reverse the ip address for the ptr query"""
+    reversed_ip = ".".join(reversed(ip.split(".")))
+    return reversed_ip
+
+
+def is_valid_ipv4(ip):
+    """Check if the given ip is valid (using regex)"""
+    return bool(re.match(IP_PATTERN, ip))
 
 
 def handle_client_request(resource, client_socket):
     """ Check the required resource, generate proper HTTP response and send to client"""
+    get_splited_resource = resource.split("/")
+    data = ""
     http_header = ""  # contain all the headers
     http_header = OK200_RESPONSE
-    if resource == '/' or resource == "":
-        data = "insert valid ip or url"
-    else:
-        data = dns_request_type_a(resource[1:])
-    if len(data) == 0:
-        data = "Error! there is no such url or ip ,try again"
 
-    # else:  # 404
-    #     client_socket.send(NOT_FOUND404_RESPONSE.encode())
-    #     return None
+    if resource == '/' or resource == "":  # no request
+        data = "Insert valid IP or URL"
+    elif len(get_splited_resource) == 2:  # a type request
+        data = dns_request_type_a(resource[1:])
+    elif get_splited_resource[1] == "reverse" and is_valid_ipv4(get_splited_resource[2]):  # ptr type request
+        data = dns_request_type_ptr(get_splited_resource[2])
+    else:
+        data = "Invalid input ,try again"
+
+    if len(data) == 0:
+        data = "Error! there is a problem with request ,try again"
 
     http_header += 'Content-length: {size}\r\n'.format(size=len(data))  # content-length header
     http_header += "{}".format('Content-Type: text/html charset=utf-8\r\n')
-
-    # read the data from the file
     http_header += '\r\n'  # the limits between the headers to the data
     http_response = http_header.encode() + str(data).encode()
     client_socket.send(http_response)
