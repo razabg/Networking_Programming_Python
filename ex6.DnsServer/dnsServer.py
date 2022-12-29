@@ -1,4 +1,4 @@
-# ex6.DnsServer over http-server (using scapy)
+# ex6.DnsServer over http-server (using scapy).
 # implementing nslookup commands : A query and PTR query.
 # Author: Raz abergel.
 
