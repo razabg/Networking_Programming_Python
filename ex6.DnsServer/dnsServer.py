@@ -1,6 +1,6 @@
 # ex6.DnsServer over http-server (using scapy)
 # implementing nslookup commands : A query and PTR query
-# Author: Raz abergel
+# Author: Raz abergel.
 
 
 from scapy.layers.dns import DNSQR, DNS, DNSRR
