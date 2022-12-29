@@ -1,5 +1,5 @@
 """EX  server_chat implementation
-   Author: Raz Abergel 313575185
+   Author: Raz Abergel
    Date:21/11/22
    Possible client commands defined in chat_protocol.py
 """

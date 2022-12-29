@@ -1,11 +1,10 @@
 # ex6.DnsServer over http-server (using scapy)
 # implementing nslookup commands : A query and PTR query
-# Author: Raz abergel 313575185
+# Author: Raz abergel
 
 
 from scapy.layers.dns import DNSQR, DNS, DNSRR
 from scapy.layers.inet import UDP, IP
-from scapy.sendrecv import sr1
 from scapy.all import *
 import socket
 import re
@@ -22,14 +21,17 @@ IP_PATTERN = r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-
 def dns_request_type_a(url):
     """Regular mapping (A), url name -> ip"""
     dns_query = IP(dst="8.8.8.8") / UDP(sport=24601, dport=53) / DNS(qdcount=1, rd=1) / DNSQR(qname=url)
-    result = sr1(dns_query, timeout=2, retry=3)
-    counter = result[DNS].ancount  # counter of the query answers
+    result = sr1(dns_query, timeout=1)
+    counter = result[DNS].ancount  # counter of the query's answers
     ip_list = ""
+    if counter == 0:
+        data = "Error! the website is not exists ,try again"
+        return data
     if counter == 1:
         ip_list += result[DNSRR][0].rdata + '<br>'
         return ip_list
 
-    for i in range(1, counter):  # loop over the ans and take the rdata section
+    for i in range(0, counter):  # loop over the ans' and take the rdata section
         if is_valid_ipv4(str(result[DNSRR][i].rdata)):  # check if the rdata contains ipv4
             ip_list += result[DNSRR][i].rdata + '<br>'
 
@@ -42,8 +44,8 @@ def dns_request_type_ptr(ip):
     dns_query = IP(dst='8.8.8.8') / UDP(sport=24601, dport=53) / DNS(qdcount=1, rd=1) / DNSQR(
         qname=rev_ip(ip) + REV_POST, qtype='PTR')
 
-    result = sr1(dns_query, timeout=2, retry=3)
-    if not result.haslayer(DNSRR):  # in case there is no canonical nam
+    result = sr1(dns_query, timeout=1)
+    if not result.haslayer(DNSRR):  # in case there is no canonical name
         canonical_name = "This IP has no canonical name"
         return canonical_name
     decoded_name = result[DNSRR][0].rdata.decode()
@@ -62,6 +64,17 @@ def is_valid_ipv4(ip):
     return bool(re.match(IP_PATTERN, ip))
 
 
+def handle_internet_crash(client_socket):
+    """In case of network failure ,the function will be called and send message to the client"""
+    http_header = OK200_RESPONSE
+    data = "There is a problem with your internet , try to fix the problem"
+    http_header += 'Content-length: {size}\r\n'.format(size=len(data))  # content-length header
+    http_header += "{}".format('Content-Type: text/html charset=utf-8\r\n')
+    http_header += '\r\n'  # the limits between the headers to the data
+    http_response = http_header.encode() + str(data).encode()
+    client_socket.send(http_response)
+
+
 def handle_client_request(resource, client_socket):
     """ Check the required resource, generate proper HTTP response and send to client"""
     get_splited_resource = resource.split("/")
@@ -71,12 +84,22 @@ def handle_client_request(resource, client_socket):
 
     if resource == '/' or resource == "":  # no request
         data = "Insert valid IP or URL"
-    elif len(get_splited_resource) == 2:  # a type request
-        data = dns_request_type_a(resource[1:])
-    elif get_splited_resource[1] == "reverse" and is_valid_ipv4(get_splited_resource[2]):  # ptr type request
-        data = dns_request_type_ptr(get_splited_resource[2])
+    elif len(get_splited_resource) == 2:  # A type request
+        try:
+            data = dns_request_type_a(resource[1:])
+        except Exception as e:  # in case of internet failure the server will still work
+            print("Error: {}".format(e))
+            handle_internet_crash(client_socket)
+            return
+    elif get_splited_resource[1] == "reverse" and is_valid_ipv4(get_splited_resource[2]):  # PTR type request
+        try:
+            data = dns_request_type_ptr(get_splited_resource[2])
+        except Exception as e:  # in case of internet failure the server will still work
+            print("Error: {}".format(e))
+            handle_internet_crash(client_socket)
+            return
     else:
-        data = "Invalid input ,try again"
+        data = "Invalid input, check if your ip is valid and try again"
 
     if len(data) == 0:
         data = "Error! there is a problem with request ,try again"

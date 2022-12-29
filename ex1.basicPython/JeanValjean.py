@@ -1,4 +1,4 @@
-# raz abergel 313575185
+# raz abergel
 # Deja Vu exercise
 
 def main():

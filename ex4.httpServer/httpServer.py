@@ -1,6 +1,6 @@
 # ex5.httpServer
 # Ex 4.4 and 4.9 (in the book) - HTTP Server Shell
-# Author: Raz abergel 313575185
+# Author: Raz abergel
 
 # Note: The code is written in a simple way, without classes, log files or other utilities, for educational purpose
 
