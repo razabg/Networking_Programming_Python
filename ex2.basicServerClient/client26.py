@@ -1,5 +1,5 @@
 """EX 2.6 client implementation
-   Author: Raz Abergel 313575185
+   Author: Raz Abergel
    Date:6/11/22
    Possible client commands defined in protocol.py
 """
