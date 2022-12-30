@@ -1,5 +1,6 @@
 from scapy.all import *
 
+
 def filter_dns(packet):
     if DNSQR in packet:
         return packet[DNSQR].qtype == 1
