@@ -13,7 +13,7 @@ I want to track every activity that will be suspicious with the following factor
 3.Determine a specific threshold that every ip that passed the limit will be suspicious.
 4.calc the rate of sending ack packets per seconds --
  -- (using the time of the first packet and the last packet),if the rate is too high it is suspicious.
-(I determent that above 3 packets per second is too high)"""
+(I determent that above 5 packets per second is too high)"""
 
 from collections import defaultdict
 from scapy.layers.inet import TCP, IP
@@ -23,7 +23,7 @@ from scapy.utils import rdpcap
 THRESHOLD = 9
 
 # Set the threshold for the rate at which SYN packets are received (in packets per second)
-RATE_THRESHOLD = 3
+RATE_THRESHOLD = 5
 
 
 def main():
@@ -51,11 +51,15 @@ def main():
     elapsed_time = end_time - start_time
 
     # Open a file for writing
-    with open('suspiciousIps.txt', 'w') as f:
+    with open('SuspiciousIpList.txt', 'w') as f:
         # Iterate over the dictionaries and check for mismatches between SYN and ACK counts
         for ip, syn_counter in syn_counter.items():
             # Calculate the rate at which SYN packets were received from this IP
             rate = syn_counter / elapsed_time
+            if ip.startswith("100.64"):  # by doing a little research in wireshark we can identify that
+                # the network start with '100.64' is apparently the target network and that is why we don't want
+                # to add this group of ip addresses to the list.
+                continue
             # if the syn counter is above the limit and on the top of that
             # this address didn't return any ack to the server.
             if syn_counter > THRESHOLD and ack_counter[ip] == 0:
