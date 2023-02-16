@@ -1,35 +1,55 @@
-from collections import deque
+from typing import Optional
 
 
-# Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is
-# valid.
-#
-# An input string is valid if:
-#
-# Open brackets must be closed by the same type of brackets.
-# Open brackets must be closed in the correct order.
-# Every close bracket has a corresponding open bracket of the same type. "{ [ ] }"
+
+#Definition for singly-linked list.
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
 class Solution:
-    def isValid(self, s: str) -> bool:
-        Map = {")": "(", "]": "[", "}": "{"}
-        stack = []
+    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        curr = head
+        prev = None
+        while curr is not None:
+            nxt = curr.next
+            curr.next = prev
+            prev = curr
+            curr = nxt
 
-        for c in s:
-            if c not in Map:
-                stack.append(c)
-                continue
-            if not stack or stack[-1] != Map[c]:
-                return False
-            stack.pop()
+        return prev
 
-        return not stack
+
+
 
 
 
 def main():
+
+    head = ListNode(1)
+    a = ListNode(2)
+    b = ListNode(3)
+    c = ListNode(4)
+    d = ListNode(5)
+    head.next = a
+    a.next = b
+    b.next = c
+    c.next = d
+    temp = head
+    while temp.next is not None:
+        print(temp.val,end="")
+        print(" -> ",end="")
+        temp = temp.next
+    print(temp.val)
+
     sol = Solution()
-    b = sol.isValid("{[]}")
-    print(b)
+    res = sol.reverseList(head)
+    temp = res
+    while temp.next is not None:
+        print(temp.val,end="")
+        print(" -> ",end="")
+        temp = temp.next
+    print(temp.val)
 
 if __name__ == '__main__':
     main()

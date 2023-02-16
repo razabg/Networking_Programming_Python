@@ -101,7 +101,7 @@ def main():
                 print("New client joined!", client_address)
                 clients_names[connection] = None
                 client_sockets.append(connection)
-            else:  # if its client socket and we want the read the message that he sent
+            else:  # if it's a client socket, and we want the read the message that he sent
                 try:
                     valid_msg, cmd = chat_protocol.get_msg(current_socket)
                     if valid_msg:

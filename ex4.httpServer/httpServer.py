@@ -16,7 +16,7 @@ SOCKET_TIMEOUT = 0.1
 DEFAULT_URL = "C:\\NETWORKS\\works\\ex4.httpServer\\webroot\\index.html"
 # Response options:
 OK200_RESPONSE = "HTTP/1.1 200 OK\r\n"
-MOVED302_RESPONSE = "HTTP/1.1 302 Moved Temporarily\r\n"  # moved response
+MOVED302_RESPONSE = "HTTP/1.1 302 Moved Temporarily\r\n"  # moved response - URL redirection
 NOT_FOUND404_RESPONSE = "HTTP/1.1 404 NOT FOUND\r\n"
 
 # the dict redirect the old address to the new one

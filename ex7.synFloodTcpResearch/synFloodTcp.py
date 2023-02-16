@@ -1,5 +1,5 @@
 # ex7.Syn Flood attack research.
-# examine pcap file and look for the suspicious addresses that might attack the server and write them in a file.
+# examine pcap file and look for the suspicious addresses that might attack the server and write them into a file.
 # Author: Raz abergel.
 
 """THE ALGORITHM:
