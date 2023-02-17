@@ -14,3 +14,12 @@ for port in port_range:
     else:
         print(f"Port {port} is open")
         s.close()
+
+
+
+
+# for port in range(20, 1025):
+#     syn_packet = IP(dst='write your ip here') / TCP(dport=port, seq=123, flags='S')
+#     syn_ack_packet = sr1(syn_packet, verbose=0, timeout=30)
+#     if syn_ack_packet:
+#         print(syn_ack_packet[TCP].sport)
