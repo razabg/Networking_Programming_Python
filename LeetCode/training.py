@@ -8,16 +8,13 @@ class ListNode:
         self.val = val
         self.next = next
 class Solution:
-    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
-        curr = head
-        prev = None
-        while curr is not None:
-            nxt = curr.next
-            curr.next = prev
-            prev = curr
-            curr = nxt
+    def hasCycle(self, head: Optional[ListNode]) -> bool:
 
-        return prev
+
+
+
+
+
 
 
 
@@ -28,13 +25,16 @@ def main():
 
     head = ListNode(1)
     a = ListNode(2)
-    b = ListNode(3)
-    c = ListNode(4)
-    d = ListNode(5)
+    b = ListNode(4)
     head.next = a
     a.next = b
-    b.next = c
+
+    head2 = ListNode(1)
+    c = ListNode(3)
+    d = ListNode(4)
+    head2.next = c
     c.next = d
+
     temp = head
     while temp.next is not None:
         print(temp.val,end="")
@@ -42,8 +42,15 @@ def main():
         temp = temp.next
     print(temp.val)
 
+    temp = head2
+    while temp.next is not None:
+        print(temp.val, end="")
+        print(" -> ", end="")
+        temp = temp.next
+    print(temp.val)
+
     sol = Solution()
-    res = sol.reverseList(head)
+    res = sol.mergeTwoLists(head,head2)
     temp = res
     while temp.next is not None:
         print(temp.val,end="")
