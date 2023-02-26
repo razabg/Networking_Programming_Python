@@ -7,8 +7,8 @@ import os
 
 import boto3
 
-AWS_ACCESS_KEY_ID = 'T7HMYxxxxxxxx' # insert here your real access key code
-AWS_SECRET_ACCESS_KEY = 'gavJNExxxxxxxx'
+AWS_ACCESS_KEY_ID = 'xxxxxxxx' # insert here your real access key code
+AWS_SECRET_ACCESS_KEY = 'xxxxxxxx'
 REGION = 'eu-central-1'
 
 transcribe = boto3.client('transcribe',
