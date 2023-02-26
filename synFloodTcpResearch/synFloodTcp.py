@@ -32,7 +32,7 @@ def main():
     ack_counter = defaultdict(int)
 
     # Read the pcap file and iterate over the packets
-    packets = rdpcap(r'C:\NETWORKS\works\ex7.synFloodTcpResearch\SYNflood.pcapng')
+    packets = rdpcap(r'/synFloodTcpResearch\SYNflood.pcapng')
 
     start_time = packets[0].time  # store the time of the first packet as the start time
     end_time = packets[-1].time  # store the time of the last packet as the end time

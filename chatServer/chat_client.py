@@ -1,4 +1,4 @@
-# "python C:\NETWORKS\works\ex3.chatServer\chat_client.py"
+# "python C:\NETWORKS\works\chatServer\chat_client.py"
 
 """EX  client_chat implementation
    Author: Raz Abergel
@@ -8,6 +8,7 @@
 
 
 import socket
+import chat_protocol
 import msvcrt
 import select
 
@@ -25,7 +26,7 @@ ENTER = '\r'
 
 def main():
     my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    my_socket.connect((HOME_IP, 5555))
+    my_socket.connect((HOME_IP, chat_protocol.PORT))
 
     user_input = ""
     print("pls enter commands:\n")
@@ -33,13 +34,12 @@ def main():
         rlist, wlist, xlist = select.select([my_socket], [my_socket], [], 0.1)
         if len(rlist) != 0:  # unlike the server, there is no need to iterate over the list because
             # we know that we have only one element in the list = my_socket
-            #valid_msg, cmd = chat_protocol.get_msg(rlist[0])
-            data = rlist[0].recv(1024).decode()
-            if len(data) != 0:
-                if data == "EXIT":
+            valid_msg, cmd = chat_protocol.get_msg(rlist[0])
+            if valid_msg:
+                if cmd == "EXIT":
                     break
                 print()
-                print(data + "\n")
+                print(cmd + "\n")
 
             else:  # we will get here only of there is a disruption with length field of the protocol
                 print("wrong protocol\n")
@@ -65,7 +65,7 @@ def main():
                             print("The message is too long,try again\n")
                             user_input = ""
                             continue
-                        wlist[0].send(user_input.encode())
+                        wlist[0].send(chat_protocol.create_msg(user_input).encode())
                         user_input = ""  # erase the user input
                         print()
                     else:

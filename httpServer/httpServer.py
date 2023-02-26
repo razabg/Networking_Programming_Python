@@ -13,14 +13,14 @@ IP = '0.0.0.0'
 PORT = 80
 SOCKET_TIMEOUT = 0.1
 
-DEFAULT_URL = "C:\\NETWORKS\\works\\ex4.httpServer\\webroot\\index.html"
+DEFAULT_URL = "C:\\NETWORKS\\works\\httpServer\\webroot\\index.html"
 # Response options:
 OK200_RESPONSE = "HTTP/1.1 200 OK\r\n"
 MOVED302_RESPONSE = "HTTP/1.1 302 Moved Temporarily\r\n"  # moved response - URL redirection
 NOT_FOUND404_RESPONSE = "HTTP/1.1 404 NOT FOUND\r\n"
 
 # the dict redirect the old address to the new one
-REDIRECTION_DICTIONARY = {'C:\\NETWORKS\\works\\ex4.httpServer\\webroot\\/index.bla': DEFAULT_URL}
+REDIRECTION_DICTIONARY = {'C:\\NETWORKS\\works\\httpServer\\webroot\\/index.bla': DEFAULT_URL}
 
 
 def calc_triangle_area(para_url, client_socket):
@@ -75,7 +75,7 @@ def handle_client_request(resource, client_socket):
     if resource == '/' or resource == "":  # the client-request is general url
         url = DEFAULT_URL
     else:  # chaining the url to the path
-        url = "C:\\NETWORKS\\works\\ex4.httpServer\\webroot\\" + resource
+        url = "C:\\NETWORKS\\works\\httpServer\\webroot\\" + resource
 
     # check if URL had been redirected(302),valid(200),not found(404)
     if url in REDIRECTION_DICTIONARY:  # 302
