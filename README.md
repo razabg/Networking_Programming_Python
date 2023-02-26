@@ -2,7 +2,13 @@
 # Raz abergel
 network programing 
 
-Using tcp and udp sockets :<br>
+Using the following tools and frame:<br>
+tcp and udp sockets<br>
+scapy <br>
+aws transcribe and s3 <br>
+
+***********
+
 #Chat server-client for multiple clients using select os method.<br>
 #Http server with parameters.<br>
 #Dns server,implement nslookup command using scapy (A query and PTR query).<br>
