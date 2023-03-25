@@ -2,10 +2,10 @@
 # Raz abergel
 network programing 
 
-**Using the following tools :<br>**
-**tcp and udp sockets<br>**
-**scapy <br>**
-**aws transcribe api and s3 <br>**
+**Tsing the following tools :<br>**
+***Tcp and udp sockets<br>**
+***Scapy <br>**
+***AWS transcribe api and s3 <br>**
 
 ***********
 
